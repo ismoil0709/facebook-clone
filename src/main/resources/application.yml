@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/facebook
+    username: postgres
+    password: ismoil_0709
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
