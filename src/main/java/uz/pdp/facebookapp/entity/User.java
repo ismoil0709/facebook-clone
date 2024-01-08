@@ -3,6 +3,7 @@ package uz.pdp.facebookapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @AllArgsConstructor
@@ -26,10 +27,16 @@ public class User {
     private byte[] profileImage;
     @Column(nullable = false)
     private String password;
-    private String dateOfBirth;
+    private LocalDate dateOfBirth;
     private String location;
-    private String about = "About";
-    @OneToMany
+    private String about;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Post> posts;
-
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<User> followers;
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    @ToString.Exclude
+    private List<User> followed;
 }

@@ -17,13 +17,14 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @Column(nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(nullable = false,name = "commented_by_id")
     private User commentedBy;
     @Column(nullable = false)
     private String comment;
     @Column(nullable = false)
     private LocalDate commentedAt;
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Comment> replies;
 }

@@ -17,16 +17,17 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @Column(nullable = false)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "created_by_id",nullable = false)
     private User createdBy;
     private String caption;
     @Column(nullable = false)
     private byte[] media;
-    private Integer likes = 0;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<User> likedBy;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
+    @ToString.Exclude
     private List<Comment> comments;
 
 
