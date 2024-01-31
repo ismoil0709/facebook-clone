@@ -14,7 +14,7 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "users")
-public class User {
+public class User extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,6 +24,8 @@ public class User {
     private String email;
     @Column(nullable = false)
     private String username;
+    @ManyToMany
+    private List<UserRole> roles;
     private byte[] profileImage;
     @Column(nullable = false)
     private String password;

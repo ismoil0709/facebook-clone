@@ -24,15 +24,15 @@ public class MediaController {
     private final PostService postService;
     private final UserService userService;
     @GetMapping("post/{id}")
-    public ResponseEntity<?> post(@PathVariable Long id){
+    public ResponseEntity<byte[]> post(@PathVariable Long id){
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(postService.getById(id).getMedia());
+                .body(postService.getMedia(id));
     }
     @GetMapping("/user/{id}")
-    public ResponseEntity<?> profile(@PathVariable Long id){
+    public ResponseEntity<byte[]> profile(@PathVariable Long id){
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(userService.getById(id).getProfileImage());
+                .body(userService.getProfileImage(id));
     }
 }

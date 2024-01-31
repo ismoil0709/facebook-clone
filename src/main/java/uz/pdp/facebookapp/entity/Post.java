@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @ToString
 @Entity
-public class Post {
+public class Post extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +25,7 @@ public class Post {
     private byte[] media;
     @OneToMany(cascade = CascadeType.ALL)
     @ToString.Exclude
-    private List<User> likedBy;
+    private List<Like> likes;
     @OneToMany(cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<Comment> comments;

@@ -2,41 +2,43 @@ package uz.pdp.facebookapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uz.pdp.facebookapp.dto.PostDto;
+import uz.pdp.facebookapp.dto.request.PostCreationDto;
+import uz.pdp.facebookapp.dto.response.PostDto;
 import uz.pdp.facebookapp.entity.Comment;
 import uz.pdp.facebookapp.entity.Post;
 import uz.pdp.facebookapp.entity.User;
 import uz.pdp.facebookapp.exception.NotFoundException;
 import uz.pdp.facebookapp.exception.NullOrEmptyException;
 import uz.pdp.facebookapp.repository.PostRepository;
+import uz.pdp.facebookapp.repository.UserRepository;
 import uz.pdp.facebookapp.service.PostService;
-import uz.pdp.facebookapp.service.UserService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
 
     @Override
-    public Post save(PostDto post) {
+    public PostDto save(PostCreationDto post) {
         if (post.userId() == null)
             throw new NullOrEmptyException("User Id");
+        if (post.caption() == null || post.caption().isBlank() || post.caption().isEmpty())
+            throw new NullOrEmptyException("Caption");
         if (post.media() == null)
             throw new NullOrEmptyException("Media");
+        User user = userRepository.findById(post.userId()).orElseThrow(() -> new NotFoundException("User"));
         try {
-            return postRepository.save(Post.builder()
+            return new PostDto(postRepository.save(Post.builder()
                     .caption(post.caption())
-                    .createdBy(userService.getById(post.userId()))
+                    .createdBy(user)
                     .media(post.media().getInputStream().readAllBytes())
-                    .build());
+                    .build()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,73 +52,34 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post getById(Long id) {
+    public PostDto getById(Long id) {
         if (id == null)
             throw new NullOrEmptyException("Id");
-        return postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post"));
+        return new PostDto(postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post")));
     }
 
     @Override
-    public List<Post> getAll() {
+    public List<PostDto> getAll() {
         List<Post> all = postRepository.findAll();
         if (all.isEmpty())
             throw new NullOrEmptyException("Posts");
-        return all;
+        return all.stream().map(PostDto::new).toList();
     }
 
     @Override
-    public List<Post> getByUserId(Long userId) {
+    public List<PostDto> getByUserId(Long userId) {
         if (userId == null)
             throw new NullOrEmptyException("User id");
-        List<Post> byCreatedBy = postRepository.getByUser(userId);
+        List<Post> byCreatedBy = postRepository.findByCreatedBy(userId);
         if (byCreatedBy.isEmpty())
             throw new NullOrEmptyException("Posts");
-        return byCreatedBy;
+        return byCreatedBy.stream().map(PostDto::new).toList();
     }
 
     @Override
-    public List<Comment> getComments(Long postId) {
-        if (postId == null)
-            throw new NullOrEmptyException("Post id");
-        List<Comment> comments = postRepository.getComments(postId);
-        if (comments.isEmpty())
-            throw new NullOrEmptyException("Comments");
-        return comments;
-    }
-
-    @Override
-    public List<User> getLikedUsers(Long postId) {
-        if (postId == null)
-            throw new NullOrEmptyException("Post id");
-        List<User> likedUsers = postRepository.getLikedUsers(postId);
-        if (likedUsers.isEmpty())
-            throw new NullOrEmptyException("Liked users");
-        return likedUsers;
-
-    }
-
-    @Override
-    public void like(Long userId, Long postId) {
-        if (postId == null)
-            throw new NotFoundException("Post");
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post"));
-        post.getLikedBy().add(userService.getById(userId));
-        postRepository.save(post);
-    }
-
-    @Override
-    public void comment(Long userId, Long postId, String comment) {
-        if (postId == null)
-            throw new NotFoundException("Post");
-        if (comment == null || comment.isBlank() || comment.isEmpty())
-            throw new NullOrEmptyException("Comment");
-
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post"));
-        post.getComments().add(Comment.builder()
-                .comment(comment)
-                .commentedAt(LocalDate.now())
-                .commentedBy(userService.getById(userId))
-                .build());
-        postRepository.save(post);
+    public byte[] getMedia(Long id) {
+        return postRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Post")
+        ).getMedia();
     }
 }

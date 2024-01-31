@@ -1,29 +1,28 @@
 package uz.pdp.facebookapp.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import uz.pdp.facebookapp.dto.UserDto;
-import uz.pdp.facebookapp.dto.UserLoginDto;
-import uz.pdp.facebookapp.entity.Post;
-import uz.pdp.facebookapp.entity.User;
+import uz.pdp.facebookapp.dto.JwtDto;
+import uz.pdp.facebookapp.dto.request.ProfileImageDto;
+import uz.pdp.facebookapp.dto.request.UserRegisterDto;
+import uz.pdp.facebookapp.dto.request.UserLoginDto;
+import uz.pdp.facebookapp.dto.request.UserUpdateDto;
+import uz.pdp.facebookapp.dto.response.UserDto;
 
 import java.util.List;
 
 @Service
 public interface UserService {
-    User register(UserDto user);
-    User login(UserLoginDto loginDto);
-    User update(User user);
+    JwtDto register(UserRegisterDto registerDto);
+    JwtDto login(UserLoginDto loginDto);
+    JwtDto update(UserUpdateDto updateDto);
     void delete(Long id);
-    User getById(Long id);
-    List<User> getAll();
-    User getByUsername(String username);
-    User getByEmail(String email);
-    List<Post> getLikedPosts(Long id);
-    List<Post> getComments(Long id);
-    List<User> getFollowers(Long id);
-    List<User> getFollowed(Long id);
-    void addImageToProfile(Long id,MultipartFile multipartFile);
+    UserDto getById(Long id);
+    List<UserDto> getAll();
+    UserDto getByUsername(String username);
+    UserDto getByEmail(String email);
+    List<UserDto> getFollowers(Long id);
+    List<UserDto> getFollowed(Long id);
+    void addImageToProfile(ProfileImageDto imageDto);
     void follow(Long userId,Long followedUserId);
-
+    byte[] getProfileImage(Long id);
 }

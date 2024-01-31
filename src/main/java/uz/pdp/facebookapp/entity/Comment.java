@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @ToString
 @Entity
-public class Comment {
+public class Comment extends Auditing{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,6 +22,8 @@ public class Comment {
     private User commentedBy;
     @Column(nullable = false)
     private String comment;
+    @ManyToOne
+    private Post post;
     @Column(nullable = false)
     private LocalDate commentedAt;
     @ManyToMany(cascade = CascadeType.ALL)
